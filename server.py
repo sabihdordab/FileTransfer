@@ -15,7 +15,7 @@ if __name__ == '__main__' :
     It is a popular choice for deploying network services.
     '''
 
-    number_of_client = int(input('Enter number of clients: ')) 
+    number_of_clients = int(input('Enter number of clients: ')) 
 
     # defining socket
 
@@ -23,7 +23,14 @@ if __name__ == '__main__' :
     #AF_INET refers to the address-family ipv4. The SOCK_STREAM means connection-oriented TCP protocol.
 
     sock.bind((host, port)) 
-    sock.listen(number_of_client)
+    sock.listen(number_of_clients)
+    connections = [] # storing clients
+    print('Initiating clients...') 
+    for i in range(number_of_clients): 
+        c = sock.accept() 
+        connections.append(c) 
+        print('Connected with client', i+1) 
+
 
     
 
