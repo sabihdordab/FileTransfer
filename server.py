@@ -4,6 +4,7 @@ if __name__ == '__main__' :
     
     host = '127.0.0.1' # local host
     port = 8080 # test port
+    BUFFER_SIZE = 1024
     '''
     8000 vs 8080:
     Port 8000 is commonly used for local development servers 
@@ -23,7 +24,7 @@ if __name__ == '__main__' :
     #AF_INET refers to the address-family ipv4. The SOCK_STREAM means connection-oriented TCP protocol.
 
     sock.bind((host, port)) 
-    sock.listen(number_of_clients)
+    sock.listen(number_of_clients) # enabling server to accept connections
     connections = [] # storing clients
     print('Initiating clients...') 
     for i in range(number_of_clients): 
@@ -37,7 +38,7 @@ if __name__ == '__main__' :
     for c in connections: 
         # Receiving File Data 
         client_i += 1
-        data = c[0].recv(1024).decode() 
+        data = c[0].recv(BUFFER_SIZE).decode() 
         filename = 'file'+str(file_i)+'.txt'
         file_i = file_i+1
         with open(filename, "w") as f:
@@ -46,7 +47,7 @@ if __name__ == '__main__' :
                     break
                 else: 
                     f.write(data) 
-                    data = c[0].recv(1024).decode() 
+                    data = c[0].recv(BUFFER_SIZE).decode() 
   
         print('Receiving file from client', client_i) 
         print('Received successfully! New filename is:', filename)
