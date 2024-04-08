@@ -32,5 +32,24 @@ if __name__ == '__main__' :
         print('Connected with client', i+1) 
 
 
+    file_i = 0
+    client_i = 0
+    for c in connections: 
+        # Receiving File Data 
+        client_i += 1
+        data = c[0].recv(1024).decode() 
+        filename = 'file'+str(file_i)+'.txt'
+        file_i = file_i+1
+        f = open(filename, "w") 
+        while data: 
+            if not data: 
+                break
+            else: 
+                f.write(data) 
+                data = c[0].recv(1024).decode() 
+  
+        print('Receiving file from client', client_i) 
+        print('Received successfully! New filename is:', filename)
+
     
 
