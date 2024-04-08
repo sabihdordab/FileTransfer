@@ -50,6 +50,7 @@ if __name__ == '__main__' :
   
         print('Receiving file from client', client_i) 
         print('Received successfully! New filename is:', filename)
-
-    
-
+        f.close() 
+ 
+    for c in connections: 
+        c[0].close() 
