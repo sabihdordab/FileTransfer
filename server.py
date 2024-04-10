@@ -1,10 +1,12 @@
 import socket
-
+import random
 if __name__ == '__main__' : 
     
-    host = '127.0.0.1' # local host
+    #host = '127.0.0.1' # local host
+    host = socket.gethostbyname(socket.gethostname())
     port = 8080 # test port
     BUFFER_SIZE = 1024
+    FORMAT = "utf-8"
     '''
     8000 vs 8080:
     Port 8000 is commonly used for local development servers 
@@ -21,37 +23,33 @@ if __name__ == '__main__' :
     TIMEOUT = 60
     sock.settimeout(TIMEOUT)  # Set a timeout for accepting connections
     sock.bind((host, port)) 
-
-    number_of_clients = int(input('Enter number of clients: ')) 
-    sock.listen(number_of_clients) # enabling server to accept connections
-    connections = [] # storing clients
+    sock.listen() # enabling server to accept connections
+    #connections = [] # storing clients
     print('Initiating clients...') 
-    for i in range(number_of_clients): 
-
+    while 1 : 
         try:
-            client = sock.accept()
-            connections.append(client)
-            print('Connected with client', i+1)
+            client,address = sock.accept() 
+            #connections.append(client)
+            print('Connected by', address) 
+            
         except socket.timeout:
-            print(f'Client {i+1} timed out after {TIMEOUT} seconds.')
+            print(f'Client {address} timed out after {TIMEOUT} seconds.')
             continue
 
         # Receiving File Data 
-        print('Receiving file from client',i) 
-        data = client[0].recv(BUFFER_SIZE).decode() 
-        if not data: 
-                    print('no data! from client',i) 
-                    client[0].close()  
-                    continue
-        
-        file_path = 'serverfiles/file'+str(i+1)+'.txt'
-        with open(file_path, "w") as f:
-            while data: 
-                if not data: 
-                    break
-                else: 
-                    f.write(data) 
-                    data = client[0].recv(BUFFER_SIZE).decode() 
-  
-        print('Received successfully! File path is:', file_path)
-        client[0].close() 
+        print('Receiving file from client',address) 
+        data = client.recv(BUFFER_SIZE).decode(FORMAT) 
+        if data != "exit": 
+            file_path = 'serverfiles/file'+str(random.randint(1,1000))+'.txt'
+            with open(file_path, "w") as f:
+                while data!= "exit":
+                    f.write(data)
+                    f.write('\n')
+                    data = client.recv(BUFFER_SIZE).decode(FORMAT) 
+
+            print('Received successfully! File path is:', file_path)
+            client.send("Done.".encode(FORMAT))
+
+        client.send("Bye.".encode(FORMAT))    
+        print(f"{address} disconnected.")
+        client.close() 
