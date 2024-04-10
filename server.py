@@ -28,12 +28,13 @@ if __name__ == '__main__' :
     print('Initiating clients...') 
     while 1 : 
         try:
-            client,address = sock.accept() 
+            client,address = sock.accept()
+            client.send("Connected^^.".encode(FORMAT))
             #connections.append(client)
             print('Connected by', address) 
             
         except socket.timeout:
-            print(f'timed out after {TIMEOUT} seconds.')
+            print(f'{TIMEOUT} seconds,No connection.')
             continue
 
         # Receiving File Data 

@@ -21,7 +21,8 @@ if __name__ == '__main__':
 	sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
     # Connecting with Server 
 	print(f"Connecting to {host}:{port}")
-	sock.connect((host, port)) 
+	sock.connect((host, port))
+	print("[SERVER]",sock.recv(BUFFER_SIZE).decode(FORMAT)) 
 	# Reading file and sending data to server 
 	while 1:
 		inp = input("filepath or exit?:))))\n")
