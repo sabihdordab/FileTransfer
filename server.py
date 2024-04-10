@@ -33,7 +33,7 @@ if __name__ == '__main__' :
             print('Connected by', address) 
             
         except socket.timeout:
-            print(f'Client {address} timed out after {TIMEOUT} seconds.')
+            print(f'timed out after {TIMEOUT} seconds.')
             continue
 
         # Receiving File Data 
