@@ -15,22 +15,26 @@ if __name__ == '__main__' :
     is a common port used for web servers like Apache Tomcat or network administration tools. 
     It is a popular choice for deploying network services.
     '''
-
-    number_of_clients = int(input('Enter number of clients: ')) 
-
     # defining socket
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
     #AF_INET refers to the address-family ipv4. The SOCK_STREAM means connection-oriented TCP protocol.
+    TIMEOUT = 60
+    sock.settimeout(TIMEOUT)  # Set a timeout for accepting connections
     sock.bind((host, port)) 
 
+    number_of_clients = int(input('Enter number of clients: ')) 
     sock.listen(number_of_clients) # enabling server to accept connections
     connections = [] # storing clients
     print('Initiating clients...') 
     for i in range(number_of_clients): 
 
-        client = sock.accept() 
-        connections.append(client) 
-        print('Connected with client', i+1) 
+        try:
+            client = sock.accept()
+            connections.append(client)
+            print('Connected with client', i+1)
+        except socket.timeout:
+            print(f'Client {i+1} timed out after {TIMEOUT} seconds.')
+            continue
 
         # Receiving File Data 
         print('Receiving file from client',i) 
@@ -40,7 +44,7 @@ if __name__ == '__main__' :
                     client[0].close()  
                     continue
         
-        file_path = 'serverfiles/file'+str(i)+'.txt'
+        file_path = 'serverfiles/file'+str(i+1)+'.txt'
         with open(file_path, "w") as f:
             while data: 
                 if not data: 
