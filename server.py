@@ -7,6 +7,7 @@ if __name__ == '__main__' :
     port = 8080 # test port
     BUFFER_SIZE = 1024
     FORMAT = "utf-8"
+    TIMEOUT = 60
     '''
     8000 vs 8080:
     Port 8000 is commonly used for local development servers 
@@ -20,27 +21,18 @@ if __name__ == '__main__' :
     # defining socket
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
     #AF_INET refers to the address-family ipv4. The SOCK_STREAM means connection-oriented TCP protocol.
-    TIMEOUT = 60
-    sock.settimeout(10)  # Set a timeout for accepting connections
+    
     sock.bind((host, port)) 
     sock.listen() # enabling server to accept connections
-    #connections = [] # storing clients
     print('Initiating clients...') 
     while 1 : 
+        client,address = sock.accept()
+        client.send("Connected,timeout:60s!!!!!!!.".encode(FORMAT))
+        print('Connected by', address)
         try:
-            client,address = sock.accept()
-            client.send("Connected^^,timeout:60s!!!!!!!.".encode(FORMAT))
-            #connections.append(client)
-            print('Connected by', address) 
-            
-        except socket.timeout:
-            print(f'{TIMEOUT} seconds,No connection.')
-            continue
-
-        try:
-            client.settimeout(TIMEOUT)
             # Receiving File Data 
             print('Receiving file from client',address) 
+            client.settimeout(TIMEOUT) 
             data = client.recv(BUFFER_SIZE).decode(FORMAT) 
             if data != "exit": 
                 file_path = 'serverfiles/file'+str(random.randint(1,1000))+'.txt'
@@ -48,6 +40,7 @@ if __name__ == '__main__' :
                     while data!= "exit":
                         f.write(data)
                         f.write('\n')
+                        client.settimeout(TIMEOUT) 
                         data = client.recv(BUFFER_SIZE).decode(FORMAT) 
 
                 print('Received successfully! File path is:', file_path)
