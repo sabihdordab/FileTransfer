@@ -19,38 +19,35 @@ if __name__ == '__main__' :
     number_of_clients = int(input('Enter number of clients: ')) 
 
     # defining socket
-
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
     #AF_INET refers to the address-family ipv4. The SOCK_STREAM means connection-oriented TCP protocol.
-
     sock.bind((host, port)) 
+
     sock.listen(number_of_clients) # enabling server to accept connections
     connections = [] # storing clients
     print('Initiating clients...') 
     for i in range(number_of_clients): 
-        c = sock.accept() 
-        connections.append(c) 
+
+        client = sock.accept() 
+        connections.append(client) 
         print('Connected with client', i+1) 
 
-
-    file_i = 0
-    client_i = 0
-    for c in connections: 
         # Receiving File Data 
-        client_i += 1
-        data = c[0].recv(BUFFER_SIZE).decode() 
-        filename = 'file'+str(file_i)+'.txt'
-        file_i = file_i+1
-        with open(filename, "w") as f:
+        print('Receiving file from client',i) 
+        data = client[0].recv(BUFFER_SIZE).decode() 
+        if not data: 
+                    print('no data! from client',i) 
+                    client[0].close()  
+                    continue
+        
+        file_path = 'serverfiles/file'+str(i)+'.txt'
+        with open(file_path, "w") as f:
             while data: 
                 if not data: 
                     break
                 else: 
                     f.write(data) 
-                    data = c[0].recv(BUFFER_SIZE).decode() 
+                    data = client[0].recv(BUFFER_SIZE).decode() 
   
-        print('Receiving file from client', client_i) 
-        print('Received successfully! New filename is:', filename)
- 
-    for c in connections: 
-        c[0].close() 
+        print('Received successfully! File path is:', file_path)
+        client[0].close() 
