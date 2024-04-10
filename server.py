@@ -21,7 +21,7 @@ if __name__ == '__main__' :
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
     #AF_INET refers to the address-family ipv4. The SOCK_STREAM means connection-oriented TCP protocol.
     TIMEOUT = 60
-    sock.settimeout(TIMEOUT)  # Set a timeout for accepting connections
+    sock.settimeout(10)  # Set a timeout for accepting connections
     sock.bind((host, port)) 
     sock.listen() # enabling server to accept connections
     #connections = [] # storing clients
@@ -29,7 +29,7 @@ if __name__ == '__main__' :
     while 1 : 
         try:
             client,address = sock.accept()
-            client.send("Connected^^.".encode(FORMAT))
+            client.send("Connected^^,timeout:60s!!!!!!!.".encode(FORMAT))
             #connections.append(client)
             print('Connected by', address) 
             
@@ -37,20 +37,24 @@ if __name__ == '__main__' :
             print(f'{TIMEOUT} seconds,No connection.')
             continue
 
-        # Receiving File Data 
-        print('Receiving file from client',address) 
-        data = client.recv(BUFFER_SIZE).decode(FORMAT) 
-        if data != "exit": 
-            file_path = 'serverfiles/file'+str(random.randint(1,1000))+'.txt'
-            with open(file_path, "w") as f:
-                while data!= "exit":
-                    f.write(data)
-                    f.write('\n')
-                    data = client.recv(BUFFER_SIZE).decode(FORMAT) 
+        try:
+            client.settimeout(TIMEOUT)
+            # Receiving File Data 
+            print('Receiving file from client',address) 
+            data = client.recv(BUFFER_SIZE).decode(FORMAT) 
+            if data != "exit": 
+                file_path = 'serverfiles/file'+str(random.randint(1,1000))+'.txt'
+                with open(file_path, "w") as f:
+                    while data!= "exit":
+                        f.write(data)
+                        f.write('\n')
+                        data = client.recv(BUFFER_SIZE).decode(FORMAT) 
 
-            print('Received successfully! File path is:', file_path)
-            client.send("Done.".encode(FORMAT))
+                print('Received successfully! File path is:', file_path)
 
-        client.send("Bye.".encode(FORMAT))    
-        print(f"{address} disconnected.")
-        client.close() 
+            client.send("Done,Bye.".encode(FORMAT))    
+            print(f"{address} disconnected.")
+            client.close()
+
+        except socket.timeout :
+            print("timeout..!")
